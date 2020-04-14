@@ -21,7 +21,7 @@ The app can be started in fullscreen by passing ```fs``` as first parameter.
 Botspot has improved the appearance of the buttons:
 
  - The edges of the buttons are a lighter color
- - The buttons "light up" a little twhen the mouse hovers over them.
+ - The buttons "light up" a little when the mouse hovers over them.
 
 ![Screenshot](screenshot.png)
 
