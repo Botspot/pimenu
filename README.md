@@ -1,13 +1,9 @@
 PiMenu
 ======
 
-This is a simple fullscreen menu system written in Python TKInter. It has been
-developed with a Raspberry Pi Touchscreen in mind and is optimized for small
-screens (320x240 is assumed).
+This is a simple fullscreen menu system written in Python TKInter. It has been developed with a Raspberry Pi Touchscreen in mind and is optimized for small screens (640x480 is assumed).
 
-The design is inspired by Windows 8's Metro design. Tiles are configured in
-```pimenu.yaml```, they can either open new pages of tiles or execute the action
-script ```pimenu.sh``` to execute arbitrary tasks.
+The design is inspired by Windows 8's Metro design. Tiles are configured in ```pimenu.yaml```, they can either open new pages of tiles or execute the action script ```pimenu.sh``` to execute arbitrary tasks.
 
 On the Raspberry, install python-yaml:
 
@@ -21,6 +17,11 @@ Copy the example configs before running the script:
 The app can be started in fullscreen by passing ```fs``` as first parameter.
 
     ./pimenu.py fs
+
+Botspot has improved the appearance of the buttons:
+
+ - The edges of the buttons are a lighter color
+ - The buttons "light up" a little twhen the mouse hovers over them.
 
 ![Screenshot](screenshot.png)
 
