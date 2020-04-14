@@ -9,6 +9,26 @@ from math import sqrt, floor, ceil
 
 import yaml
 
+def colorscale(self, hexstr, scalefactor):
+    hexstr = hexstr.strip('#')
+
+    if scalefactor < 0 or len(hexstr) != 6:
+        return hexstr
+
+    r, g, b = int(hexstr[:2], 16), int(hexstr[2:4], 16), int(hexstr[4:], 16)
+
+    r = clamp(r + scalefactor)
+    g = clamp(g + scalefactor)
+    b = clamp(b + scalefactor)
+
+    return "#%02x%02x%02x" % (r, g, b)
+
+def clamp(val, minimum=0, maximum=255):
+    if val < minimum:
+        return minimum
+    if val > maximum:
+        return maximum
+    return val
 
 class FlatButton(Button):
     def __init__(self, master=None, cnf=None, **kw):
@@ -20,19 +40,20 @@ class FlatButton(Button):
             bd=0,
             bg="#b91d47",  # dark-red
             fg="white",
-            activebackground="#b91d47",  # dark-red
+            activebackground=colorscale(self, "#b91d47", 30),  # dark-red
             activeforeground="white",
-            highlightthickness=0
+            highlightthickness=2,
+            highlightbackground=colorscale(self, "#b91d47", 60)
         )
 
     def set_color(self, color):
         self.configure(
             bg=color,
             fg="white",
-            activebackground=color,
-            activeforeground="white"
+            activebackground=colorscale(self, color, 30),
+            activeforeground="white",
+            highlightbackground=colorscale(self, color, 60)
         )
-
 
 class PiMenu(Frame):
     framestack = []
@@ -94,12 +115,12 @@ class PiMenu(Frame):
             self.hide_top()
             back = FlatButton(
                 wrap,
-                text='back…',
+                text='back',
                 image=self.get_icon("arrow.left"),
                 command=self.go_back,
             )
             back.set_color("#00a300")  # green
-            back.grid(row=0, column=0, padx=1, pady=1, sticky=TkC.W + TkC.E + TkC.N + TkC.S)
+            back.grid(row=0, column=0, padx=0, pady=0, sticky=TkC.W + TkC.E + TkC.N + TkC.S)
             num += 1
 
         # add the new frame to the stack and display it
@@ -135,7 +156,7 @@ class PiMenu(Frame):
             if 'items' in item:
                 # this is a deeper level
                 btn.configure(command=lambda act=act, item=item: self.show_items(item['items'], act),
-                              text=item['label'] + '…')
+                              text=item['label'])
                 btn.set_color("#2b5797")  # dark-blue
             else:
                 # this is an action
@@ -148,8 +169,8 @@ class PiMenu(Frame):
             btn.grid(
                 row=int(floor(num / cols)),
                 column=int(num % cols),
-                padx=1,
-                pady=1,
+                padx=0,
+                pady=0,
                 sticky=TkC.W + TkC.E + TkC.N + TkC.S
             )
             num += 1
@@ -211,18 +232,20 @@ class PiMenu(Frame):
         """
         # hide the menu and show a delay screen
         self.hide_top()
-        delay = Frame(self, bg="#2d89ef")
-        delay.pack(fill=TkC.BOTH, expand=1)
-        label = Label(delay, text="Executing...", fg="white", bg="#2d89ef", font="Sans 30")
-        label.pack(fill=TkC.BOTH, expand=1)
+        #delay = Frame(self, bg="#2d89ef")
+        #delay.pack(fill=TkC.BOTH, expand=1)
+        #label = Label(delay, text="Executing...", fg="white", bg="#2d89ef", font="Sans 30")
+        #label.pack(fill=TkC.BOTH, expand=1)
         self.parent.update()
 
         # excute shell script
         subprocess.call([self.path + '/pimenu.sh'] + actions)
 
         # remove delay screen and show menu again
-        delay.destroy()
+        #delay.destroy()
         self.destroy_all()
+        if len(sys.argv) > 1 and sys.argv[1] == 'fs':
+            quit()
         self.show_top()
 
     def go_back(self):
@@ -240,7 +263,7 @@ class PiMenu(Frame):
 
 def main():
     root = Tk()
-    root.geometry("320x240")
+    root.geometry("640x480")
     root.wm_title('PiMenu')
     if len(sys.argv) > 1 and sys.argv[1] == 'fs':
         root.wm_attributes('-fullscreen', True)
